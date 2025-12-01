@@ -1,0 +1,30 @@
+# --- Python Padrão ---
+__pycache__/
+*.py[cod]
+*$py.class
+
+# --- Ambiente Virtual ---
+# Ignora a pasta do venv (seja qual for o nome que você usou)
+venv/
+.venv/
+env/
+
+# --- Banco de Dados ---
+# Não queremos versionar o banco de dados local
+*.db
+*.sqlite
+logger.db
+
+# --- Logs e Dados do Teste (IMPORTANTE) ---
+# Ignora a pasta onde os CSVs dos testes são salvos
+testes/
+*.csv
+*.log
+
+# --- IDEs / Editores ---
+.vscode/
+.idea/
+*.swp
+
+# --- Mac OS (se alguém usar) ---
+.DS_Store

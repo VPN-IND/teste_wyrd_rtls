@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Wyrd Logger</title>
+    <style>
+        body { font-family: sans-serif; padding: 30px; background: #eee; }
+        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); max-width: 800px; margin: 0 auto; }
+        h1 { text-align: center; color: #333; }
+        
+        .status-recording { background: #ffebee; border: 2px solid #ef5350; color: #c62828; padding: 20px; text-align: center; border-radius: 4px; margin-bottom: 20px; }
+        .status-idle { background: #e8f5e9; border: 2px solid #66bb6a; color: #2e7d32; padding: 15px; text-align: center; font-weight: bold; border-radius: 4px; margin-bottom: 20px; }
+        
+        .error-msg { background: #ffcdd2; color: #b71c1c; border: 1px solid #ef9a9a; padding: 15px; text-align: center; border-radius: 4px; margin-bottom: 20px; font-weight: bold; }
+
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; }
+        input[type="text"], textarea { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+        
+        .grid-select { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .checkbox-list { max-height: 200px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; background: #fafafa; }
+        .checkbox-item { display: block; margin-bottom: 5px; }
+        
+        .btn { width: 100%; padding: 15px; font-size: 1.2em; border: none; border-radius: 4px; cursor: pointer; color: white; font-weight: bold; }
+        .btn-start { background-color: #28a745; }
+        .btn-start:hover { background-color: #218838; }
+        .btn-stop { background-color: #dc3545; }
+        .btn-stop:hover { background-color: #c82333; }
+        
+        .admin-link { display: block; text-align: center; margin-top: 20px; color: #666; text-decoration: none; }
+        
+        .recording-details { margin-top: 15px; text-align: left; background: white; padding: 10px; border-radius: 4px; border: 1px solid #ef9a9a; color: #333; font-size: 0.9em; }
+        .recording-details ul { margin: 5px 0; padding-left: 20px; }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h1>📼 Wyrd Logger de Teste</h1>
+
+        {% if error == 'duplicate' %}
+            <div class="error-msg">
+                ⚠️ ERRO: Já existe uma pasta com esse nome de teste! <br>
+                Por favor, escolha outro nome.
+            </div>
+        {% endif %}
+
+        {% if state.is_recording %}
+            <div class="status-recording">
+                <div style="font-size: 1.2em; font-weight: bold;">🔴 GRAVANDO AGORA</div>
+                <div style="margin: 10px 0;">
+                    Teste: <strong>{{ state.test_name }}</strong><br>
+                    Início: {{ state.start_time_str }}
+                </div>
+                
+                <div class="recording-details">
+                    <strong>ESPs Monitoradas:</strong>
+                    <ul>
+                        {% for esp in state.selected_esps %}
+                            <li>{{ esp }}</li>
+                        {% endfor %}
+                    </ul>
+                    
+                    <strong>Ativos Monitorados:</strong>
+                    <ul>
+                        {% for asset in state.selected_assets %}
+                            <li>{{ asset }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            
+            <form action="/stop" method="post">
+                <button type="submit" class="btn btn-stop">PARAR TESTE</button>
+            </form>
+
+        {% else %}
+            <div class="status-idle">
+                🟢 AGUARDANDO COMANDO
+            </div>
+
+            <form action="/start" method="post">
+                <div class="form-group">
+                    <label>Nome do Teste (será o nome da pasta):</label>
+                    <input type="text" name="test_name" placeholder="Ex: Teste_Antena_V2" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Descrição (Opcional):</label>
+                    <textarea name="description" rows="2" placeholder="Ex: Testando sensibilidade no quarto 102..."></textarea>
+                </div>
+
+                <div class="grid-select">
+                    <div class="form-group">
+                        <label>Quais ESPs gravar?</label>
+                        <div class="checkbox-list">
+                            {% for esp in esps %}
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="esps" value="{{ esp.id_esp }}" checked> 
+                                {{ esp.id_esp }}
+                            </label>
+                            {% else %}
+                                <small>Nenhuma ESP cadastrada em <a href="/admin">/admin</a></small>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Quais Ativos gravar?</label>
+                        <div class="checkbox-list">
+                            {% for ativo in ativos %}
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="ativos" value="{{ ativo.mac_beacon }}" checked>
+                                {{ ativo.nome }} ({{ ativo.mac_beacon }})
+                            </label>
+                            {% else %}
+                                <small>Nenhum Ativo cadastrado em <a href="/admin">/admin</a></small>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <br>
+                <button type="submit" class="btn btn-start">INICIAR GRAVAÇÃO</button>
+            </form>
+        {% endif %}
+
+        <a href="/admin" class="admin-link">⚙️ Cadastrar ESPs e Ativos</a>
+    </div>
+
+</body>
+</html>
