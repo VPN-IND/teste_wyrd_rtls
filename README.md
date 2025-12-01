@@ -1,35 +1,50 @@
-Claro\! Aqui está um **README.md** pronto para você copiar e colar na raiz do seu projeto. Ele cobre desde a instalação até o uso do Admin.
+Aqui está o **README.md** completo e atualizado, incluindo a etapa de baixar o repositório.
 
------
+Basta criar um arquivo chamado `README.md` na raiz do seu projeto e colar o conteúdo abaixo:
 
+````markdown
 # 📼 Wyrd Logger - Ferramenta de Teste RTLS
 
-Este software é um "Sniffer" e Gravador de dados MQTT para testes de campo do sistema RTLS. Ele permite selecionar ESPs e Ativos específicos e gerar logs CSV organizados por teste.
+Este software é um "Sniffer" e Gravador de dados MQTT para testes de campo do sistema RTLS. Ele permite selecionar ESPs e Ativos específicos e gerar logs CSV organizados por teste, mantendo compatibilidade com o firmware v0.4.0.
+
+---
 
 ## 🚀 Instalação e Configuração
 
-### 1\. Pré-requisitos
+### 1. Pré-requisitos
+Antes de começar, certifique-se de ter instalado:
+* **Git** (para baixar o código).
+* **Python 3.10** ou superior.
+* **Mosquitto MQTT Broker** (rodando na porta padrão 1883).
 
-  * **Python 3.10+** instalado.
-  * **Mosquitto MQTT** rodando (porta 1883).
-
-### 2\. Criar Ambiente Virtual (Venv)
-
-Abra o terminal na pasta do projeto e execute:
+### 2. Baixar o Repositório
+Abra o seu terminal (ou Git Bash) na pasta onde deseja salvar o projeto e execute:
 
 ```bash
-# Cria a pasta 'venv'
-python -m venv venv
-```
+# Clone o repositório (substitua pela URL real do seu git se já tiver)
+git clone [https://github.com/VPN-IND/teste_wyrd_rtls](https://github.com/VPN-IND/teste_wyrd_rtls)
 
-### 3\. Ativar o Ambiente
+# Entre na pasta do projeto
+cd nome-da-pasta-do-projeto
+````
+
+> **Nota:** Se você não usa Git, pode baixar o arquivo **.ZIP** do repositório, extrair e abrir o terminal dentro da pasta extraída.
+
+### 3\. Criar Ambiente Virtual (Venv)
+
+O ambiente virtual isola as bibliotecas do projeto para não bagunçar seu sistema.
 
   * **Linux / Mac:**
+
     ```bash
+    python3 -m venv venv
     source venv/bin/activate
     ```
+
   * **Windows (PowerShell):**
+
     ```powershell
+    python -m venv venv
     venv\Scripts\activate
     ```
 
@@ -43,49 +58,56 @@ Com o ambiente ativado, instale as bibliotecas necessárias:
 pip install -r requirements.txt
 ```
 
-*(Se você ainda não gerou o requirements.txt, use: `pip install fastapi uvicorn paho-mqtt sqlalchemy sqladmin python-multipart jinja2`)*
+*Caso o arquivo `requirements.txt` ainda não exista, instale manualmente:*
+
+```bash
+pip install fastapi uvicorn paho-mqtt sqlalchemy sqladmin python-multipart jinja2
+```
 
 -----
 
 ## ▶️ Como Rodar
 
-Certifique-se de que o Broker MQTT está rodando. Depois, na raiz do projeto (onde você vê a pasta `app/`), execute:
+Certifique-se de que o **Mosquitto MQTT** está rodando. Depois, na raiz do projeto (onde você vê a pasta `app/`), execute:
 
 ```bash
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-  * Acesse o painel principal: **[http://127.0.0.1:8000](https://www.google.com/search?q=http://127.0.0.1:8000)**
-  * Acesse o painel administrativo: **[http://127.0.0.1:8000/admin](https://www.google.com/search?q=http://127.0.0.1:8000/admin)**
+  * 🖥️ **Painel de Controle:** [http://127.0.0.1:8000](https://www.google.com/search?q=http://127.0.0.1:8000)
+  * ⚙️ **Configuração (Admin):** [http://127.0.0.1:8000/admin](https://www.google.com/search?q=http://127.0.0.1:8000/admin)
 
 -----
 
-## ⚙️ O Painel Admin
+## ⚙️ Configurando o Admin
 
-O Admin é fundamental para o funcionamento do sistema, pois **as ESPs só monitoram o que está cadastrado aqui** (via Whitelist).
+O Admin é fundamental. O firmware das ESPs pede ao servidor uma "Whitelist" ao iniciar. **Se a ESP ou o Ativo não estiverem cadastrados aqui, a ESP não enviará dados.**
 
 1.  Acesse **/admin** no navegador.
 2.  **Embarcados:**
-      * Cadastre as ESPs que você vai usar no teste.
-      * **ID ESP:** Deve ser idêntico ao que está no firmware (ex: `WRD00000002`).
+      * Cadastre as ESPs que você vai usar.
+      * **ID ESP:** Deve ser idêntico ao gravado no firmware (ex: `WRD00000002`).
 3.  **Ativos:**
       * Cadastre os Beacons que você quer rastrear.
       * **MAC Beacon:** O endereço MAC do beacon (ex: `AA:BB:CC:DD:EE:FF`).
 
-> **Nota:** Sempre que você adicionar novos Ativos no Admin, reinicie as ESPs (ou aguarde elas pedirem configuração) para que elas atualizem a Whitelist interna delas.
+> **Dica:** Ao iniciar o servidor (`uvicorn`), ele envia automaticamente um comando MQTT forçando todas as ESPs conectadas a baixarem a nova lista de ativos cadastrados.
 
 -----
 
 ## 📂 Onde ficam os dados?
 
-Ao iniciar um teste, o sistema cria automaticamente a seguinte estrutura de pastas:
+Ao iniciar um teste na tela principal, o sistema cria automaticamente a seguinte estrutura de pastas na raiz do projeto:
 
 ```text
 testes/
   └── Nome_Do_Seu_Teste/
-      ├── info.txt            # Metadados (Data, Hora, Duração, Descrição)
-      ├── WRD00000002/        # Pasta da ESP
-      │   └── aa-bb-cc...csv  # Log do Beacon específico
+      ├── info.txt            # Resumo (Data, Hora, Duração, Descrição)
+      ├── WRD00000002/        # Pasta da ESP específica
+      │   └── aa-bb-cc...csv  # Log CSV com RSSI e WiFi
       └── WRD00000003/
           └── ...
+```
+
+```
 ```
