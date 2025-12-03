@@ -71,7 +71,8 @@ pip install fastapi uvicorn paho-mqtt sqlalchemy sqladmin python-multipart jinja
 Certifique-se de que o **Mosquitto MQTT** está rodando. Depois, na raiz do projeto (onde você vê a pasta `app/`), execute:
 
 ```bash
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+source venv/bin/activate
+uvicorn main:app --reload --host 0.0.0.0 --port 9500
 ```
 
   * 🖥️ **Painel de Controle:** [http://127.0.0.1:8000](https://www.google.com/search?q=http://127.0.0.1:8000)
